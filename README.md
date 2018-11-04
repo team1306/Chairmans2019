@@ -1,4 +1,8 @@
 # Chairmans2019
 Offical code for the 2019 Chairman's Visual, betterThanChExMix
 
-The code currently running on the visual: n/a
+The code currently running on the visual: N/A
+
+
+## CAD
+Note: The distance between the first and second row is ~21.6 CM
