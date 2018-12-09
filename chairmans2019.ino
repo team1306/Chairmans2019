@@ -31,12 +31,14 @@
 #include <Wire.h>
 #include "Adafruit_Trellis.h"
 
+#define debug
+
 //Leds
-const int nLEDS = 100; //How many LED's we have
+const int nLEDS = 123; //How many LED's we have
 const int segmentSize = 20; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
 CRGB leds[nLEDS];
-const int LED_PIN = 41;
+const int LED_PIN = 42;
 CRGB current = CRGB(230, 20, 20);
 CRGB past = CRGB(255, 255, 255);
 CRGB future = CRGB(0, 0, 0);
@@ -54,19 +56,47 @@ int stage = 0;
 
 
 void setup() {
+  #ifdef debug
+  Serial.begin(9600);
+  Serial.println("Beginning led operations");
+  #endif
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, nLEDS);
-
+  for(int i=0;i<nLEDS;i++){
+    leds[i]=current;
+    #ifdef debug
+    Serial.println("|Setting led "+i);
+    #endif
+  }
+  FastLED.show();
+  #ifdef debug
+  Serial.println("Ending LED operations");
+  Serial.println("Beginning Trellis");
+  #endif
   trellis.begin(0x70);
   trellis.readSwitches();
+  trellisBootLEDs();
+  #ifdef debug
+  Serial.println("|Setting Trellis LED's");
+  #endif 
   for (int i = 0; i < 8; i++) {
+    #ifdef debug
+    Serial.println("||Setting trellis led "+i);
+    #endif
     trellis.setLED(i);
   }
+   #ifdef debug
+    Serial.println("||Setting trellis led 15");
+    Serial.println("||Setting trellis led 12");
+    #endif
   trellis.setLED(15);
   trellis.setLED(12);
   //TODO: Motor
 }
 
 void loop() {
+  #ifdef debug
+  Serial.print("Looping");
+  #endif
   //To avoid accidents,buttons activate on release.
   //If you press a button too early, simply hold it until you need it.
   int button = -1;
@@ -74,6 +104,9 @@ void loop() {
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
     if (trellis.justReleased(i)) {
       button = i;
+      #ifdef debug
+      Serial.println("Button pressed- Button "+i);
+      #endif
     }
   }
   if (!(button == -1)) {
