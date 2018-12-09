@@ -97,31 +97,31 @@ void loop(){
 * to ensure that differences in setting LED's does not change the distance rotated.
 */
 void increment(int i){
-    stage+=i;
+    stage += i;
     CRGB originalValues[nSegments];
     CRGB endValues[nSegments];
-    for(int seg=0;seg<nSegments;seg++){
-      originalValues[seg]=getSegment(seg);
-      if(seg<stage){
-        endValues[seg]=past;
+    for(int seg = 0;seg < nSegments; seg++){
+      originalValues[seg] = getSegment(seg);
+      if(seg < stage){
+        endValues[seg] = past;
       }
-      else if(seg==stage){
-        endValues[seg]=current;
+      else if(seg == stage){
+        endValues[seg] = current;
       }
       else{
-        endValues[seg]=future;
+        endValues[seg] = future;
       }
     }
-    int startTime=micros();
-    if(i>0){
+    int startTime = micros();
+    if(i > 0){
         //set motor forward
     }else{
         //set motor backward
     }
-    int duration=abs(i)*timeInRotation
-    while(micros()<startTime+duration){
-      t=micros();//Initialize time for uniform brighness
-      for(int seg=0;seg<nSegments;seg++){
+    int duration = abs(i)*timeInRotation;
+    while(micros() < startTime+duration){
+     int t = micros(); //Initialize time for uniform brighness
+      for(int seg=0; seg < nSegments; seg++){
         //set each to the blend of its original and end values with the more time giving more weight to the end color.
         //The abs() is there to ensure that the delay in the two micros() calls above does not cause a negative value.
         setSegment(blendColor(endValues[seg],originalValues[seg],t,abs(startTime+duration-startTime));
@@ -165,10 +165,10 @@ CRGB getSegment(int i, CRGB source[]){
  */
 CRGB blendColors(CRGB c1, CRGB c2, double alpha1, double alpha2){
   double sum=alpha1+alpha2;
-  alpha1=alpha1/sum;
-  alpha2=alpha2/sum;
-  CRGB combined=CRGB(0,0,0);
-  for(int i=0;i<3;i++){
+  alpha1 = alpha1 / sum;
+  alpha2 = alpha2 / sum;
+  CRGB combined = CRGB(0,0,0);
+  for(int i = 0;i < 3; i++){
     combined[i]=(byte)(c1[i]*alpha1+c2[i]*alpha2);
   }
  return combined; 
@@ -188,7 +188,6 @@ void trellisBootLEDs() {
     trellis.writeDisplay();
     delay(50);
   }
->>>>>>> e5a481f6dd0739ca2e63f74f92280dab7cd7a012
 }
 
 
@@ -201,7 +200,7 @@ CRGB White=CRGB(255,255,255);
  * DOES NOT update live leds
  */
 void setSegment(int i,CRGB c){
-  for(int ind=i*segmentSize;ind<i*segmentSize+segmentSize;i++){
-    leds[ind]=c;
+  for(int ind = i*segmentSize; ind < i*segmentSize+segmentSize; i++){
+    leds[ind] = c;
   }
 }
