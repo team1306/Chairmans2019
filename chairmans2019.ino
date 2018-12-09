@@ -27,12 +27,12 @@
 * Pin 21 - SCL (Trellis)
 * Pin 41 - Din (LED Strip)
 * Pin A3 - INT (Trellis)
-*
-* Power
-*                               ┌─> 5V─>Arduino Vin
-*   Robot Battery─>Breaker─>PDP─┤
+     
+* Power                                                   ┌──>Trellis 5V
+*                               ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V   
+*   Robot Battery─>Breaker─>PDP─┤                         └──>Arduino Vin
 *                               └─>40A─>Victor─>CIM
-*
+*    
 *    Trellis Buttons
 *    +---+---+---+---+
 *    | > | > | > | > |      > is go to next step
