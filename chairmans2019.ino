@@ -125,7 +125,7 @@ void increment(int i) {
     for (int seg = 0; seg < nSegments; seg++) {
       //set each to the blend of its original and end values with the more time giving more weight to the end color.
       //The abs() is there to ensure that the delay in the two micros() calls above does not cause a negative value.
-      setSegment(blendColor(endValues[seg], originalValues[seg], t, abs(startTime + duration - startTime) ));
+      setSegment(seg,blendColors(endValues[seg], originalValues[seg], t, abs(startTime + duration - startTime)));
     }
     FastLED.show();
   }
