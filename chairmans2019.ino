@@ -34,7 +34,7 @@
 #define debug
 
 //Leds
-const int nLEDS = 123; //How many LED's we have
+const int nLEDS = 22; //How many LED's we have
 const int segmentSize = 20; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
 CRGB leds[nLEDS];
@@ -64,7 +64,9 @@ void setup() {
   for(int i=0;i<nLEDS;i++){
     leds[i]=current;
     #ifdef debug
-    Serial.println("|Setting led "+i);
+    String message="|Setting led ";
+    message.concat(i);
+    Serial.println(message);
     #endif
   }
   FastLED.show();
@@ -80,7 +82,9 @@ void setup() {
   #endif 
   for (int i = 0; i < 8; i++) {
     #ifdef debug
-    Serial.println("||Setting trellis led "+i);
+    String message="||Setting trellis led ";
+    message.concat(i);
+    Serial.println(message);
     #endif
     trellis.setLED(i);
   }
