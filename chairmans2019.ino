@@ -50,57 +50,56 @@ Adafruit_Trellis matrix0 = Adafruit_Trellis();
 Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 
 //Motor
-const int timeInRotation = 3000; //How many miliseconds the wheel must turn in between stages
-
+const uint32_t period = 3 * 1000; //How many seconds (3) the wheel must turn in between stages
+const int CIM_PIN = 9;
 int stage = 0;
 
-
 void setup() {
-  #ifdef debug
+#ifdef debug
   Serial.begin(9600);
   Serial.println("Beginning led operations");
-  #endif
+#endif
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, nLEDS);
-  for(int i=0;i<nLEDS;i++){
-    leds[i]=current;
-    #ifdef debug
-    String message="|Setting led ";
+  for (int i = 0; i < nLEDS; i++) {
+    leds[i] = current;
+#ifdef debug
+    String message = "|Setting led ";
     message.concat(i);
     Serial.println(message);
-    #endif
+#endif
   }
   FastLED.show();
-  #ifdef debug
+#ifdef debug
   Serial.println("Ending LED operations");
   Serial.println("Beginning Trellis");
-  #endif
+#endif
   trellis.begin(0x70);
   trellis.readSwitches();
   trellisBootLEDs();
-  #ifdef debug
+#ifdef debug
   Serial.println("|Setting Trellis LED's");
-  #endif 
+#endif
   for (int i = 0; i < 8; i++) {
-    #ifdef debug
-    String message="||Setting trellis led ";
+#ifdef debug
+    String message = "||Setting trellis led ";
     message.concat(i);
     Serial.println(message);
-    #endif
+#endif
     trellis.setLED(i);
   }
-   #ifdef debug
-    Serial.println("||Setting trellis led 15");
-    Serial.println("||Setting trellis led 12");
-    #endif
+#ifdef debug
+  Serial.println("||Setting trellis led 15");
+  Serial.println("||Setting trellis led 12");
+#endif
   trellis.setLED(15);
   trellis.setLED(12);
-  //TODO: Motor
+  cim.attach(CIM_PIN);
 }
 
 void loop() {
-  #ifdef debug
+#ifdef debug
   Serial.print("Looping");
-  #endif
+#endif
   //To avoid accidents,buttons activate on release.
   //If you press a button too early, simply hold it until you need it.
   int button = -1;
@@ -108,9 +107,9 @@ void loop() {
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
     if (trellis.justReleased(i)) {
       button = i;
-      #ifdef debug
-      Serial.println("Button pressed- Button "+i);
-      #endif
+#ifdef debug
+      Serial.println("Button pressed- Button " + i);
+#endif
     }
   }
   if (!(button == -1)) {
@@ -152,9 +151,9 @@ void increment(int i) {
   }
   int startTime = micros();
   if (i > 0) {
-    //set motor forward
+    rotateMotor("f", 1);
   } else {
-    //set motor backward
+    rotateMotor("b", 1);
   }
   int duration = abs(i) * timeInRotation;
   while (micros() < startTime + duration) {
@@ -162,11 +161,11 @@ void increment(int i) {
     for (int seg = 0; seg < nSegments; seg++) {
       //set each to the blend of its original and end values with the more time giving more weight to the end color.
       //The abs() is there to ensure that the delay in the two micros() calls above does not cause a negative value.
-      setSegment(seg,blendColors(endValues[seg], originalValues[seg], t, abs(startTime + duration - startTime)));
+      setSegment(seg, blendColors(endValues[seg], originalValues[seg], t, abs(startTime + duration - startTime)));
     }
     FastLED.show();
   }
-  //set motor 0
+  rotateMotor("b", stage);
 }
 
 
@@ -225,4 +224,19 @@ void trellisBootLEDs() {
     trellis.writeDisplay();
     delay(50);
   }
+}
+
+//CIM Utilities
+/**
+ * Rotates CIM x number of segments
+ */
+void rotateMotor(char direction, int steps){
+for(uint32_t tStart = millis();  (millis()-tStart) < (period * steps);){
+    if(direction == 'f'){
+        cim.write(135);
+    }
+    else if(direction == 'b'){
+        cim.write(45);
+    }
+}
 }
