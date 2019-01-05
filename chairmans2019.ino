@@ -30,6 +30,7 @@
 #include <FastLED.h>
 #include <Wire.h>
 #include "Adafruit_Trellis.h"
+#include <Servo.h>
 
 #define debug
 
@@ -51,6 +52,7 @@ Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 
 //Motor
 const uint32_t period = 3 * 1000; //How many seconds (3) the wheel must turn in between stages
+Servo cim;
 const int CIM_PIN = 9;
 int stage = 0;
 
@@ -155,7 +157,7 @@ void increment(int i) {
   } else {
     rotateMotor("b", 1);
   }
-  int duration = abs(i) * timeInRotation;
+  int duration = abs(i) * period;
   while (micros() < startTime + duration) {
     int t = micros(); //Initialize time for uniform brighness
     for (int seg = 0; seg < nSegments; seg++) {
