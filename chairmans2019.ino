@@ -7,7 +7,7 @@
   Pin 20 - SDA (Trellis)
   Pin 21 - SCL (Trellis)
   Pin 41 - Din (LED Strip)
-  Pin A3 - INT (Trellis)
+  Pin A2 - INT (Trellis)
 
   Power                                                   ┌──>Trellis 5V
                                 ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
@@ -45,7 +45,7 @@ CRGB past = CRGB(255, 255, 255);
 CRGB future = CRGB(0, 0, 0);
 
 //Trellis
-const int TRELLIS_INT_PIN = A3;
+const int TRELLIS_INT_PIN = A2;
 const int TRELLIS_NUM_KEYS = 16;
 Adafruit_Trellis matrix0 = Adafruit_Trellis();
 Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
@@ -75,7 +75,7 @@ void setup() {
   Serial.println("Ending LED operations");
   Serial.println("Beginning Trellis");
 #endif
-  trellis.begin(0x70);
+  trellis.begin(0x74);
   trellis.readSwitches();
   trellisBootLEDs();
 #ifdef debug
@@ -105,14 +105,22 @@ void loop() {
   //To avoid accidents,buttons activate on release.
   //If you press a button too early, simply hold it until you need it.
   int button = -1;
+  Serial.print("button: "+button);
 
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
-    if (trellis.justReleased(i)) {
-      button = i;
+  if (trellis.justPressed(i)) {
+    Serial.print("v"); Serial.println(i);
+    trellis.setLED(i);
+  } 
+  if (trellis.justReleased(i)) {
+    Serial.print("^"); Serial.println(i);
+    trellis.clrLED(i);
+          button = i;
+  }
 #ifdef debug
       Serial.println("Button pressed- Button " + i);
 #endif
-    }
+    
   }
   if (!(button == -1)) {
     if (button < 8) {
@@ -136,6 +144,7 @@ void loop() {
   to ensure that differences in setting LED's does not change the distance rotated.
 */
 void increment(int i) {
+        Serial.print("increment fx");
   stage += i;
   CRGB originalValues[nSegments];
   CRGB endValues[nSegments];
@@ -153,9 +162,9 @@ void increment(int i) {
   }
   int startTime = micros();
   if (i > 0) {
-    rotateMotor("f", 1);
+    rotateMotor(1, 1);
   } else {
-    rotateMotor("b", 1);
+    rotateMotor(-1, 1);
   }
   int duration = abs(i) * period;
   while (micros() < startTime + duration) {
@@ -167,7 +176,7 @@ void increment(int i) {
     }
     FastLED.show();
   }
-  rotateMotor("b", stage);
+  rotateMotor(-1, stage);
 }
 
 
@@ -232,13 +241,18 @@ void trellisBootLEDs() {
 /**
  * Rotates CIM x number of segments
  */
-void rotateMotor(char direction, int steps){
-for(uint32_t tStart = millis();  (millis()-tStart) < (period * steps);){
-    if(direction == 'f'){
-        cim.write(135);
+void rotateMotor(int direction, int steps){
+          Serial.print("function");
+    if(direction == 1){
+        cim.write(135);  
+        delay(period * steps);
+        cim.write(0);
+        Serial.print("cim 135");
     }
-    else if(direction == 'b'){
+    else if(direction == -1){
         cim.write(45);
+        delay(period * steps);
+        cim.write(0);
+        Serial.print("cim 45");
     }
-}
 }
