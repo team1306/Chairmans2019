@@ -1,7 +1,7 @@
 # Chairmans2019
 Offical code for the 2019 Chairman's Visual, betterThanChExMix
 
-The code currently running on the visual: N/A
+The code currently running on the visual: chairmans2019.ino
 
 
 ## CAD
