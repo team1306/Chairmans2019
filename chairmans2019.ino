@@ -38,6 +38,8 @@
 const int nLEDS = 22; //How many LED's we have
 const int segmentSize = 20; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
+const float topMotorSpeed=0.25;
+const int stepDurations[]={100,100,100,100,100};
 CRGB leds[nLEDS];
 const int LED_PIN = 42;
 CRGB current = CRGB(230, 20, 20);
@@ -105,15 +107,21 @@ void loop() {
   //To avoid accidents,buttons activate on release.
   //If you press a button too early, simply hold it until you need it.
   int button = -1;
+  #ifdef debug
   Serial.print("button: "+button);
+  #endif
 
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
-  if (trellis.justPressed(i)) {
-    Serial.print("v"); Serial.println(i);
+  if (trellis.justPressed(i)) {    
+    #ifdef debug
+    Serial.print("Button v"); Serial.println(i);
+    #endif
     trellis.setLED(i);
   } 
   if (trellis.justReleased(i)) {
-    Serial.print("^"); Serial.println(i);
+    #ifdef debug
+    Serial.print("Button ^"); Serial.println(i);
+    #endif
     trellis.clrLED(i);
           button = i;
   }
@@ -144,10 +152,14 @@ void loop() {
   to ensure that differences in setting LED's does not change the distance rotated.
 */
 void increment(int i) {
+  #ifdef debug
         Serial.print("increment fx");
+  #endif
   stage += i;
   CRGB originalValues[nSegments];
   CRGB endValues[nSegments];
+
+  //copy segment values into original and decide new segment
   for (int seg = 0; seg < nSegments; seg++) {
     originalValues[seg] = getSegment(seg);
     if (seg < stage) {
@@ -161,12 +173,14 @@ void increment(int i) {
     }
   }
   int startTime = micros();
+  int speed=0;
   if (i > 0) {
-    rotateMotor(1, 1);
+    speed=topMotorSpeed;
   } else {
-    rotateMotor(-1, 1);
+    speed=-topMotorSpeed;
   }
-  int duration = abs(i) * period;
+  setMotor(speed);
+  int duration = sumRange(stepDurations,i,stage-i);
   while (micros() < startTime + duration) {
     int t = micros(); //Initialize time for uniform brighness
     for (int seg = 0; seg < nSegments; seg++) {
@@ -176,7 +190,10 @@ void increment(int i) {
     }
     FastLED.show();
   }
-  rotateMotor(-1, stage);
+  setMotor(-speed);
+  delay(micros()-(startTime + duration));//backtrack ammount duration overshot by
+  setMotor(0);
+  
 }
 
 
@@ -239,20 +256,47 @@ void trellisBootLEDs() {
 
 //CIM Utilities
 /**
- * Rotates CIM x number of segments
+ * Rotates CIM x number of time segments
  */
-void rotateMotor(int direction, int steps){
-          Serial.print("function");
+void rotateMotorFinite(int direction, int steps){
+          Serial.print("rotating motor for duration");
     if(direction == 1){
         cim.write(135);  
         delay(period * steps);
-        cim.write(0);
+        cim.write(85);//included to counter momentum of motor
+        delay(10);
+        cim.write(90);
         Serial.print("cim 135");
     }
     else if(direction == -1){
         cim.write(45);
         delay(period * steps);
-        cim.write(0);
+        cim.write(95);
+        delay(10);
+        cim.write(90);
         Serial.print("cim 45");
     }
 }
+/**
+ * Sets the motor to the direction indicated by the parameter.
+ * Lack of blocking 'delay' calls enables synchronization with leds
+ * float value of 1 sets to full forward, and float value of -1 sets to full backward.
+ */
+void setMotor(float value){
+  cim.write(90+int(90*value));
+}
+
+/**
+ * finds the sum of the array values in parameter1 between paramater2 and paramter3.
+ * param 2 and 3 represent array indecies, but their order does not matter.
+ */
+int sumRange(int arr[],int ind1,int ind2){
+  int lower=min(ind1,ind2);
+  int upper=max(ind1,ind2);
+  int sum=0;
+  for(int i=lower; i<upper;i++){
+    sum+=arr[i];
+  }
+  return sum;
+ }
+
