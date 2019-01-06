@@ -1,4 +1,4 @@
-/*
+    /*
   chairmans2019.ino - Code to run on Chairmans Visual for the 2019 season
   authors - Egan Johnson, Mateo Silver
 
@@ -61,7 +61,11 @@ int stage = 0;
 void setup() {
 #ifdef debug
   Serial.begin(9600);
+  Serial.println("Debugging mode enabled");
   Serial.println("Beginning led operations");
+#endif
+#ifdef !debug
+    Serial.println("Debugging mode disabled")
 #endif
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, nLEDS);
   for (int i = 0; i < nLEDS; i++) {
@@ -97,12 +101,16 @@ void setup() {
 #endif
   trellis.setLED(15);
   trellis.setLED(12);
-  cim.attach(CIM_PIN);
+
+#ifdef debug
+    Serial.println("Attaching CIM as Servo");
+#endif
+    cim.attach(CIM_PIN);
 }
 
 void loop() {
 #ifdef debug
-  Serial.print("Looping");
+  // Serial.print("Looping");
 #endif
   //To avoid accidents,buttons activate on release.
   //If you press a button too early, simply hold it until you need it.
@@ -112,12 +120,12 @@ void loop() {
   #endif
 
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
-  if (trellis.justPressed(i)) {    
+  if (trellis.justPressed(i)) {
     #ifdef debug
     Serial.print("Button v"); Serial.println(i);
     #endif
     trellis.setLED(i);
-  } 
+  }
   if (trellis.justReleased(i)) {
     #ifdef debug
     Serial.print("Button ^"); Serial.println(i);
@@ -128,7 +136,7 @@ void loop() {
 #ifdef debug
       Serial.println("Button pressed- Button " + i);
 #endif
-    
+
   }
   if (!(button == -1)) {
     if (button < 8) {
@@ -138,11 +146,14 @@ void loop() {
       increment(-1);
     }
     if (button == 15) {
-      increment(-stage);   //this should work, right? -mateo
+      increment(-stage);
+      //this should work, right? -mateo
       //Yes, but its called stage and is changed in-methods - Egan
     }
   }
-  trellis.readSwitches();//Reset the state of the trellis. Am i doing trellis right? -Egan
+  trellis.readSwitches();
+  //Reset the state of the trellis. Am i doing trellis right? -Egan
+  //readSwitches() returns a boolean depending on if there's been a change in the state of the trellis since the last call
 }
 /**
   Moves the stage by i. if I is one it will move forward one stage (one rotation, one led group).
@@ -153,7 +164,7 @@ void loop() {
 */
 void increment(int i) {
   #ifdef debug
-        Serial.print("increment fx");
+        Serial.print("increment("+i+") called");
   #endif
   stage += i;
   CRGB originalValues[nSegments];
@@ -193,7 +204,7 @@ void increment(int i) {
   setMotor(-speed);
   delay(micros()-(startTime + duration));//backtrack ammount duration overshot by
   setMotor(0);
-  
+
 }
 
 
@@ -261,7 +272,7 @@ void trellisBootLEDs() {
 void rotateMotorFinite(int direction, int steps){
           Serial.print("rotating motor for duration");
     if(direction == 1){
-        cim.write(135);  
+        cim.write(135);
         delay(period * steps);
         cim.write(85);//included to counter momentum of motor
         delay(10);
@@ -299,4 +310,3 @@ int sumRange(int arr[],int ind1,int ind2){
   }
   return sum;
  }
-
