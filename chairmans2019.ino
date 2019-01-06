@@ -93,7 +93,7 @@ void setup() {
     message.concat(i);
     Serial.println(message);
 #endif
-    trellis.setLED(i);
+    trellis.setLED(i-1); //trellis indexing starts at 0
   }
 #ifdef debug
   Serial.println("||Setting trellis led 15");
@@ -119,20 +119,39 @@ void loop() {
   Serial.print("button: "+button);
   #endif
 
-  for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
-  if (trellis.justPressed(i)) {
-    #ifdef debug
-    Serial.print("Button v"); Serial.println(i);
-    #endif
-    trellis.setLED(i);
-  }
-  if (trellis.justReleased(i)) {
-    #ifdef debug
-    Serial.print("Button ^"); Serial.println(i);
-    #endif
-    trellis.clrLED(i);
-          button = i;
-  }
+  //When you press down an "activatable" button it turns off, if it's not "activatable" it turns on
+    for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
+        if(i < 7 || i == 12 || i == 15){
+            if (trellis.justPressed(i)) {
+                #ifdef debug
+                Serial.print("Button v"); Serial.println(i);
+                #endif
+                trellis.clrLED(i);
+            }
+            if (trellis.justReleased(i)) {
+                #ifdef debug
+                Serial.print("Button ^"); Serial.println(i);
+                #endif
+                trellis.setLED(i);
+                button = i;
+            }
+        }
+        else{
+            if (trellis.justPressed(i)) {
+                #ifdef debug
+                Serial.print("Button v"); Serial.println(i);
+                #endif
+                trellis.setLED(i);
+            }
+            if (trellis.justReleased(i)) {
+                #ifdef debug
+                Serial.print("Button ^"); Serial.println(i);
+                #endif
+                trellis.clrLED(i);
+                button = i;
+            }
+        }
+    }
 #ifdef debug
       Serial.println("Button pressed- Button " + i);
 #endif
