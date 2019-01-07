@@ -1,0 +1,95 @@
+increment(1) called
+LED Destinations calculated
+Speed: 0.25
+Setting Motor to 112
+Duration: 100
+Start time: 29396
+End time: 29496
+Duration Done
+Setting Motor to 68
+backtranking 4283882484
+Setting Motor to 90
+button: -1
+Button ^0
+Button pressed- Button 0
+Button pressed- Button 1
+Button pressed- Button 2
+Button pressed- Button 3
+Button v4
+Button pressed- Button 4
+Button pressed- Button 5
+Button pressed- Button 6
+Button pressed- Button 7
+Button pressed- Button 8
+Button pressed- Button 9
+Button pressed- Button 10
+Button pressed- Button 11
+Button pressed- Button 12
+Button pressed- Button 13
+Button pressed- Button 14
+Button pressed- Button 15
+increment(1) called
+LED Destinations calculated
+Speed: 0.25
+Setting Motor to 112
+Duration: 0
+Start time: 9460
+End time: 9460
+Duration Done
+Setting Motor to 68
+backtranking 4283165648
+Setting Motor to 90
+button: -1
+Button pressed- Button 0
+Button pressed- Button 1
+Button pressed- Button 2
+Button pressed- Button 3
+Button ^4
+Button pressed- Button 4
+Button pressed- Button 5
+Button pressed- Button 6
+Button pressed- Button 7
+Button pressed- Button 8
+Button pressed- Button 9
+Button pressed- Button 10
+Button pressed- Button 11
+Button pressed- Button 12
+Button pressed- Button 13
+Button pressed- Button 14
+Button pressed- Button 15
+increment(1) called
+LED Destinations calculated
+Speed: 0.25
+Setting Motor to 112
+Duration: 100
+Start time: -26076
+End time: -25976
+Averaging LEDS. Micros:12475668
+Averaging LEDS. Micros:12509988
+Averaging LEDS. Micros:12544308
+Averaging LEDS. Micros:12578628
+Averaging LEDS. Micros:12612948
+Averaging LEDS. Micros:12647268
+Averaging LEDS. Micros:12681588
+Averaging LEDS. Micros:12715908
+Averaging LEDS. Micros:12750228
+Averaging LEDS. Micros:12784548
+Averaging LEDS. Micros:12818868
+Averaging LEDS. Micros:12853188
+Averaging LEDS. Micros:12887508
+Averaging LEDS. Micros:12921828
+Averaging LEDS. Micros:12956148
+Averaging LEDS. Micros:12990472
+Averaging LEDS. Micros:13024788
+Averaging LEDS. Micros:13059108
+Averaging LEDS. Micros:13093428
+Averaging LEDS. Micros:13127748
+Averaging LEDS. Micros:13162068
+Averaging LEDS. Micros:13196388
+Averaging LEDS. Micros:13230708
+Averaging LEDS. Micros:13265028
+Averaging LEDS. Micros:13299348
+Averaging LEDS. Micros:13333668
+Averaging LEDS. Micros:13367988
+Averaging LEDS. Micros:13402308
+Averaging LEDS. Micros:13436628
