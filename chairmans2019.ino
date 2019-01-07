@@ -65,32 +65,32 @@ void setup() {
       Serial.begin(9600);
       Serial.println("Beginning led operations");
 #ifdef debug
-  Serial.println("Debugging mode enabled");
+    Serial.println("Debugging mode enabled");
 #endif
 #ifndef debug
     Serial.println("Debugging mode disabled")
 #endif
-  FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, nLEDS);
-  for (int i = 0; i < nLEDS; i++) {
-    leds[i] = current;
+    FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, nLEDS);
+    for (int i = 0; i < nLEDS; i++) {
+        leds[i] = current;
 #ifdef debug
     String message = "|Setting led ";
     message.concat(i);
     Serial.println(message);
 #endif
-  }
-  FastLED.show();
+    }
+    FastLED.show();
 #ifdef debug
-  Serial.println("Ending LED operations");
-  Serial.println("Beginning Trellis");
+    Serial.println("Ending LED operations");
+    Serial.println("Beginning Trellis");
 #endif
-  trellis.begin(0x74);
-  trellis.readSwitches();
-  trellisBootLEDs();
+    trellis.begin(0x74);
+    trellis.readSwitches();
+    trellisBootLEDs();
 #ifdef debug
-  Serial.println("|Setting Trellis LED's");
+    Serial.println("|Setting Trellis LED's");
 #endif
-  for(int i = 0; i < 8; i++){
+    for(int i = 0; i < 8; i++){
 #ifdef debug
     String message = "||Setting trellis led ";
     message.concat(i);
@@ -99,11 +99,11 @@ void setup() {
     trellis.setLED(i);
   }
 #ifdef debug
-  Serial.println("||Setting trellis led 15");
-  Serial.println("||Setting trellis led 12");
+    Serial.println("||Setting trellis led 15");
+    Serial.println("||Setting trellis led 12");
 #endif
-  trellis.setLED(15);
-  trellis.setLED(12);
+    trellis.setLED(15);
+    trellis.setLED(12);
 
 #ifdef debug
     Serial.println("Attaching CIM as Servo");
@@ -113,7 +113,7 @@ void setup() {
 
 void loop() {
 #ifdef debug
-  // Serial.print("Looping");
+    // Serial.print("Looping");
 #endif
   //To avoid accidents,buttons activate on release.
   //If you press a button too early, simply hold it until you need it.
