@@ -46,7 +46,7 @@ CRGB future = CRGB(0, 0, 0);
 
 //CIM
 const float topMotorSpeed=1.0;
-const int stepDurations[]={1000,1000,1000,1000,1000};
+const unsigned long stepDurations[]={1000,1000,1000,1000,1000};
 const int period=1000;//unused
 
 
@@ -341,7 +341,7 @@ void setMotor(float value){
 }
 
 /**
- * finds the sum of the array values in parameter1 between paramater2 and paramter3.
+ * Finds the sum of the array values in parameter1 between paramater2 and paramter3.
  * param 2 and 3 represent array indecies, but their order does not matter.
  */
 int sumRange(int arr[],int ind1,int ind2){
@@ -352,4 +352,5 @@ int sumRange(int arr[],int ind1,int ind2){
     sum+=arr[i];
   }
   return sum;
- }
+}
+
