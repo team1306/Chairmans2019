@@ -1,4 +1,4 @@
-    /*
+/*
   chairmans2019.ino - Code to run on Chairmans Visual for the 2019 season
   authors - Egan Johnson, Mateo Silver
 
@@ -38,14 +38,17 @@
 const int nLEDS = 30*5; //How many LED's we have
 const int segmentSize = 30; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
-const float topMotorSpeed=1.0;
-const int stepDurations[]={1000,1000,1000,1000,1000};
-const int period=1000;//unused
 CRGB leds[nLEDS];
 const int LED_PIN = 42;
 CRGB current = CRGB(230, 20, 20);
 CRGB past = CRGB(255, 255, 255);
 CRGB future = CRGB(0, 0, 0);
+
+//CIM
+const float topMotorSpeed=1.0;
+const int stepDurations[]={1000,1000,1000,1000,1000};
+const int period=1000;//unused
+
 
 //Trellis
 const int TRELLIS_INT_PIN = A2;
@@ -59,10 +62,10 @@ const int CIM_PIN = 9;
 int stage = 0;
 
 void setup() {
+      Serial.begin(9600);
+      Serial.println("Beginning led operations");
 #ifdef debug
-  Serial.begin(9600);
   Serial.println("Debugging mode enabled");
-  Serial.println("Beginning led operations");
 #endif
 #ifndef debug
     Serial.println("Debugging mode disabled")
@@ -87,13 +90,13 @@ void setup() {
 #ifdef debug
   Serial.println("|Setting Trellis LED's");
 #endif
-  for (int i = 0; i < 8; i++) {
+  for(int i = 0; i < 8; i++){
 #ifdef debug
     String message = "||Setting trellis led ";
     message.concat(i);
     Serial.println(message);
 #endif
-    trellis.setLED(i-1); //trellis indexing starts at 0
+    trellis.setLED(i);
   }
 #ifdef debug
   Serial.println("||Setting trellis led 15");
