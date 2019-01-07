@@ -35,11 +35,12 @@
 #define debug
 
 //Leds
-const int nLEDS = 22; //How many LED's we have
-const int segmentSize = 20; //How many LED's are in each gear/segment
+const int nLEDS = 30*5; //How many LED's we have
+const int segmentSize = 30; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
-const float topMotorSpeed=0.25;
-const int stepDurations[]={100,100,100,100,100};
+const float topMotorSpeed=1.0;
+const int stepDurations[]={1000,1000,1000,1000,1000};
+const int period=1000;//unused
 CRGB leds[nLEDS];
 const int LED_PIN = 42;
 CRGB current = CRGB(230, 20, 20);
@@ -53,7 +54,6 @@ Adafruit_Trellis matrix0 = Adafruit_Trellis();
 Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 
 //Motor
-const uint32_t period = 3 * 1000; //How many seconds (3) the wheel must turn in between stages
 Servo cim;
 const int CIM_PIN = 9;
 int stage = 0;
@@ -64,7 +64,7 @@ void setup() {
   Serial.println("Debugging mode enabled");
   Serial.println("Beginning led operations");
 #endif
-#ifdef !debug
+#ifndef debug
     Serial.println("Debugging mode disabled")
 #endif
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, nLEDS);
@@ -116,7 +116,8 @@ void loop() {
   //If you press a button too early, simply hold it until you need it.
   int button = -1;
   #ifdef debug
-  Serial.print("button: "+button);
+  Serial.print("button: ");
+  Serial.println(button);
   #endif
 
   //When you press down an "activatable" button it turns off, if it's not "activatable" it turns on
@@ -136,27 +137,13 @@ void loop() {
                 button = i;
             }
         }
-        else{
-            if (trellis.justPressed(i)) {
-                #ifdef debug
-                Serial.print("Button v"); Serial.println(i);
-                #endif
-                trellis.setLED(i);
-            }
-            if (trellis.justReleased(i)) {
-                #ifdef debug
-                Serial.print("Button ^"); Serial.println(i);
-                #endif
-                trellis.clrLED(i);
-                button = i;
-            }
-        }
-    }
+    
 #ifdef debug
-      Serial.println("Button pressed- Button " + i);
+      Serial.print("Button pressed- Button ");
+      Serial.println(i);
 #endif
-
-  }
+    }
+  
   if (!(button == -1)) {
     if (button < 8) {
       increment(1);
@@ -170,6 +157,7 @@ void loop() {
       //Yes, but its called stage and is changed in-methods - Egan
     }
   }
+ 
   trellis.readSwitches();
   //Reset the state of the trellis. Am i doing trellis right? -Egan
   //readSwitches() returns a boolean depending on if there's been a change in the state of the trellis since the last call
@@ -183,7 +171,9 @@ void loop() {
 */
 void increment(int i) {
   #ifdef debug
-        Serial.print("increment("+i+") called");
+        Serial.print("increment("); 
+        Serial.print(i);
+        Serial.println(") called");
   #endif
   stage += i;
   CRGB originalValues[nSegments];
@@ -202,26 +192,52 @@ void increment(int i) {
       endValues[seg] = future;
     }
   }
-  int startTime = micros();
-  int speed=0;
+  #ifdef debug
+  Serial.println("LED Destinations calculated");
+  #endif
+  unsigned long startTime = millis();
+  double speed=0.1;
   if (i > 0) {
     speed=topMotorSpeed;
   } else {
     speed=-topMotorSpeed;
   }
+  #ifdef debug
+    Serial.print("Speed: ");
+    Serial.println(speed);
+  #endif
   setMotor(speed);
   int duration = sumRange(stepDurations,i,stage-i);
-  while (micros() < startTime + duration) {
-    int t = micros(); //Initialize time for uniform brighness
+  #ifdef debug
+    Serial.print("Duration: ");
+    Serial.println(duration);
+    Serial.print("Start time: ");
+    Serial.println(startTime);
+    Serial.print("End time: ");
+    Serial.println(startTime + duration);
+  #endif
+  while (millis() < startTime + duration) {
+    int t = millis(); //Initialize time for uniform brighness
+    #ifdef debug
+      Serial.print("Averaging LEDS. millis:");
+      Serial.println(millis());
+    #endif
     for (int seg = 0; seg < nSegments; seg++) {
       //set each to the blend of its original and end values with the more time giving more weight to the end color.
-      //The abs() is there to ensure that the delay in the two micros() calls above does not cause a negative value.
-      setSegment(seg, blendColors(endValues[seg], originalValues[seg], t, abs(startTime + duration - startTime)));
+      //The abs() is there to ensure that the delay in the two millis() calls above does not cause a negative value.
+      setSegment(seg, blendColors(endValues[seg], originalValues[seg], t, abs(startTime + duration)));
     }
     FastLED.show();
   }
+  #ifdef debug
+    Serial.println("Duration Done");
+  #endif
   setMotor(-speed);
-  delay(micros()-(startTime + duration));//backtrack ammount duration overshot by
+  #ifdef debug
+    Serial.print("backtranking ");
+    Serial.println(-(millis()-(startTime + duration)));
+  #endif
+  //delay(-(millis()-(startTime + duration)));//backtrack ammount duration overshot by
   setMotor(0);
 
 }
@@ -313,7 +329,12 @@ void rotateMotorFinite(int direction, int steps){
  * float value of 1 sets to full forward, and float value of -1 sets to full backward.
  */
 void setMotor(float value){
-  cim.write(90+int(90*value));
+  #ifdef debug
+  Serial.print("Setting Motor to ");
+  int val=90+(int)(90*value);
+  Serial.println(val);
+  #endif
+  cim.write(90+(int)(90*value));
 }
 
 /**
@@ -324,7 +345,7 @@ int sumRange(int arr[],int ind1,int ind2){
   int lower=min(ind1,ind2);
   int upper=max(ind1,ind2);
   int sum=0;
-  for(int i=lower; i<upper;i++){
+  for(int i=lower; i<upper; i++){
     sum+=arr[i];
   }
   return sum;
