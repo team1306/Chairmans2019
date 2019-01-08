@@ -210,7 +210,7 @@ void increment(int i) {
     Serial.println(speed);
   #endif
   setMotor(speed);
-  int duration = sumRange(stepDurations,i,stage-i);
+  unsigned long duration = sumRange(stepDurations,i,stage);
   #ifdef debug
     Serial.print("Duration: ");
     Serial.println(duration);
@@ -242,7 +242,7 @@ void increment(int i) {
   #endif
   //delay(-(millis()-(startTime + duration)));//backtrack ammount duration overshot by
   setMotor(0);
-
+  stage+=i;
 }
 
 
@@ -344,7 +344,7 @@ void setMotor(float value){
  * Finds the sum of the array values in parameter1 between paramater2 and paramter3.
  * param 2 and 3 represent array indecies, but their order does not matter.
  */
-int sumRange(int arr[],int ind1,int ind2){
+unsigned long sumRange(long arr[],int ind1,int ind2){
   int lower=min(ind1,ind2);
   int upper=max(ind1,ind2);
   int sum=0;
