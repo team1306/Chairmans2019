@@ -125,7 +125,7 @@ void loop() {
 
   //When you press down an "activatable" button it turns off, if it's not "activatable" it turns on
     for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
-        if(i < 7 || i == 12 || i == 15){
+        if( ((i < 7 || i == 12) || i == 15)){
             if (trellis.justPressed(i)) {
                 #ifdef debug
                 Serial.print("Button v"); Serial.println(i);
@@ -142,9 +142,16 @@ void loop() {
         }
     
 #ifdef debug
+      for(int i = 0; i < TRELLIS_NUM_KEYS;i++ )
+      {
+          if(trellis.isKeyPressed(i))
+          {
+              Serial.print("Button pressed-" + i );
+          }       
+      }
       Serial.print("Button pressed- Button ");
       Serial.println(i);
-#endif
+#endif 
     }
   
   if (!(button == -1)) {
@@ -245,10 +252,9 @@ void increment(int i) {
   stage+=i;
 }
 
-
 //LED utilities
 CRGB RED = CRGB(230, 20, 20); //Badgerbots Red color
-CRGB WHITE = CRGB(255, 255, 255);
+CRGB WHITE = CRGB(255, 255, 255); //white
 /**
   Sets a segment of leds to the crgb. A block is the LED's behind a given gear or location.
   DOES NOT update live leds
@@ -288,7 +294,8 @@ CRGB blendColors(CRGB c1, CRGB c2, double alpha1, double alpha2) {
 }
 //Trellis utilities
 /**
-   Boot LEDs on trelis
+   Boot LEDs on trellis
+   
 */
 void trellisBootLEDs() {
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
@@ -330,6 +337,7 @@ void rotateMotorFinite(int direction, int steps){
  * Sets the motor to the direction indicated by the parameter.
  * Lack of blocking 'delay' calls enables synchronization with leds
  * float value of 1 sets to full forward, and float value of -1 sets to full backward.
+ * hi
  */
 void setMotor(float value){
   #ifdef debug
@@ -353,4 +361,6 @@ unsigned long sumRange(long arr[],int ind1,int ind2){
   }
   return sum;
 }
+
+//hi9  lolsz
 
