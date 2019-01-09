@@ -9,10 +9,10 @@
   Pin 41 - Din (LED Strip)
   Pin A2 - INT (Trellis)
 
-  Power                                                   ┌──>Trellis 5V
-                                ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
-    Robot Battery─>Breaker─>PDP─┤                         └──>Arduino Vin
-                                └─>40A─>Victor─>CIM
+  Power                                                         ┌──>Trellis 5V
+                                  ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
+    Robot Battery─>Breaker─>PDP─┤                           └──>Arduino Vin
+                                  └─>40A─>Victor─>CIM
 
      Trellis Buttons
      +---+---+---+---+
