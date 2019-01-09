@@ -35,9 +35,9 @@
 #define debug
 
 //Leds
-const int nLEDS = 30*5; //How many LED's we have
 const int segmentSize = 30; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
+const int nLEDS = segmentSize*nSegments; //How many LED's we have
 CRGB leds[nLEDS];
 const int LED_PIN = 42;
 CRGB current = CRGB(230, 20, 20);
@@ -131,6 +131,8 @@ void loop() {
                 Serial.print("Button v"); Serial.println(i);
                 #endif
                 trellis.clrLED(i);
+                delay(250);
+                trellis.setLED(i);
             }
             if (trellis.justReleased(i)) {
                 #ifdef debug
@@ -138,6 +140,8 @@ void loop() {
                 #endif
                 trellis.setLED(i);
                 button = i;
+                delay(250);
+                trellis.clrLED(i);
             }
         }
     
