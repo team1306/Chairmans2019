@@ -35,12 +35,12 @@
 #define debug
 
 //Leds
+const int nLEDS = 30*5; //How many LED's we have
 const int segmentSize = 30; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
-const int nLEDS = segmentSize*nSegments; //How many LED's we have
-CRGB leds[nLEDS];
+CRGB leds[nLEDS];// Cmt missing?
 const int LED_PIN = 42;
-CRGB current = CRGB(230, 20, 20);
+CRGB current = CRGB(255, 255, 255); //changed from (230, 20, 20) bc it was too unsaturated
 CRGB past = CRGB(255, 255, 255);
 CRGB future = CRGB(0, 0, 0);
 
@@ -131,8 +131,6 @@ void loop() {
                 Serial.print("Button v"); Serial.println(i);
                 #endif
                 trellis.clrLED(i);
-                delay(250);
-                trellis.setLED(i);
             }
             if (trellis.justReleased(i)) {
                 #ifdef debug
@@ -140,8 +138,6 @@ void loop() {
                 #endif
                 trellis.setLED(i);
                 button = i;
-                delay(250);
-                trellis.clrLED(i);
             }
         }
     
@@ -264,12 +260,10 @@ CRGB WHITE = CRGB(255, 255, 255); //white
   DOES NOT update live leds
 */
 void setSegment(int i, CRGB c) {
-  for (int ind = i * segmentSize; ind < i * segmentSize + segmentSize; i++) {
-    leds[ind] = c;
-  }
+  setSegment(i,c,leds);
 }
 void setSegment(int i, CRGB c, CRGB destination[]) {
-  for (int ind = i * segmentSize; ind < i * segmentSize + segmentSize; i++) {
+  for (int ind = i * segmentSize; ind < i * segmentSize + segmentSize; ind++) {
     destination[ind] = c;
   }
 }
@@ -354,9 +348,9 @@ void setMotor(float value){
 
 /**
  * Finds the sum of the array values in parameter1 between paramater2 and paramter3.
- * param 2 and 3 represent array indecies, but their order does not matter.
+ * param 2 and 3 represent array indicies, but their order does not matter.
  */
-unsigned long sumRange(long arr[],int ind1,int ind2){
+unsigned long sumRange(const unsigned long arr[],int ind1,int ind2){
   int lower=min(ind1,ind2);
   int upper=max(ind1,ind2);
   int sum=0;
@@ -365,6 +359,3 @@ unsigned long sumRange(long arr[],int ind1,int ind2){
   }
   return sum;
 }
-
-//hi9  lolsz
-
