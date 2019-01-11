@@ -39,8 +39,8 @@ const int nLEDS = 30*5; //How many LED's we have
 const int segmentSize = 30; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
 CRGB leds[nLEDS];// Cmt missing?
-const int LED_PIN = 42;
-CRGB current = CRGB(255, 255, 255); //changed from (230, 20, 20) bc it was too unsaturated
+const int LED_PIN = 7;
+CRGB current = CRGB(255, 0, 0); //changed from (230, 20, 20) bc it was too unsaturated
 CRGB past = CRGB(255, 255, 255);
 CRGB future = CRGB(0, 0, 0);
 
@@ -140,20 +140,20 @@ void loop() {
                 button = i;
             }
         }
-    
+
 #ifdef debug
       for(int i = 0; i < TRELLIS_NUM_KEYS;i++ )
       {
           if(trellis.isKeyPressed(i))
           {
               Serial.print("Button pressed-" + i );
-          }       
+          }
       }
       Serial.print("Button pressed- Button ");
       Serial.println(i);
-#endif 
+#endif
     }
-  
+
   if (!(button == -1)) {
     if (button < 8) {
       increment(1);
@@ -167,7 +167,7 @@ void loop() {
       //Yes, but its called stage and is changed in-methods - Egan
     }
   }
- 
+
   trellis.readSwitches();
   //Reset the state of the trellis. Am i doing trellis right? -Egan
   //readSwitches() returns a boolean depending on if there's been a change in the state of the trellis since the last call
@@ -181,7 +181,7 @@ void loop() {
 */
 void increment(int i) {
   #ifdef debug
-        Serial.print("increment("); 
+        Serial.print("increment(");
         Serial.print(i);
         Serial.println(") called");
   #endif
@@ -293,7 +293,7 @@ CRGB blendColors(CRGB c1, CRGB c2, double alpha1, double alpha2) {
 //Trellis utilities
 /**
    Boot LEDs on trellis
-   
+
 */
 void trellisBootLEDs() {
   for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
