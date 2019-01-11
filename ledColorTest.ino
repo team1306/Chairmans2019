@@ -14,6 +14,17 @@ int b = 255;
 
 CRGB leds[NUM_LEDS];
 
+
+String midString(String str, String start, String finish){
+  int locStart = str.indexOf(start);
+  if (locStart==-1) return "";
+  locStart += start.length();
+  int locFinish = str.indexOf(finish, locStart);
+  if (locFinish==-1) return "";
+  return str.substring(locStart, locFinish);
+}
+
+
 void setup() {
   Serial.begin(9600);
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
@@ -34,13 +45,4 @@ void loop() {
     FastLED.show();
     delay(30);
   }
-}
-
-String midString(String str, String start, String finish){
-  int locStart = str.indexOf(start);
-  if (locStart==-1) return "";
-  locStart += start.length();
-  int locFinish = str.indexOf(finish, locStart);
-  if (locFinish==-1) return "";
-  return str.substring(locStart, locFinish);
 }
