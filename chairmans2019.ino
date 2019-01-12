@@ -213,7 +213,6 @@ void increment(int i) {
   // delay(-(millis()-(startTime + duration)));//backtrack ammount duration
   // overshot by
   setMotor(0);
-  stage += i;
 }
 
 // LED utilities
