@@ -6,7 +6,7 @@
   Pin 9  - Victor PWM Output
   Pin 20 - SDA (Trellis)
   Pin 21 - SCL (Trellis)
-  Pin 41 - Din (LED Strip)
+  Pin 42 - Din (LED Strip)
   Pin A2 - INT (Trellis)
 
   Power                                                         ┌──>Trellis 5V
@@ -39,7 +39,7 @@ const int nLEDS = 30*5; //How many LED's we have
 const int segmentSize = 30; //How many LED's are in each gear/segment
 const int nSegments = 5; //How many segments are in the whole thing
 CRGB leds[nLEDS];// Cmt missing?
-const int LED_PIN = 7;
+const int LED_PIN = 42;
 CRGB current = CRGB(255, 0, 0); //changed from (230, 20, 20) bc it was too unsaturated
 CRGB past = CRGB(255, 255, 255);
 CRGB future = CRGB(0, 0, 0);
