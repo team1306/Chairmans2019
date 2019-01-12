@@ -42,7 +42,7 @@ CRGB leds[nLEDS];           // Cmt missing?
 const int LED_PIN = 42;
 CRGB current =
     CRGB(255, 0, 0); // changed from (230, 20, 20) bc it was too unsaturated
-CRGB past = CRGB(255, 255, 255);
+CRGB past = CRGB(155, 155, 155);
 CRGB future = CRGB(0, 0, 0);
 
 // CIM
@@ -53,8 +53,8 @@ const int period = 1000; // unused
 // Trellis
 const int TRELLIS_INT_PIN = A2;
 const int TRELLIS_NUM_KEYS = 16;
-Adafruit_Trellis matrix0();
-Adafruit_TrellisSet trellis(&matrix0);
+Adafruit_Trellis matrix0= Adafruit_Trellis();
+Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 
 // Motor
 Servo cim;
@@ -186,14 +186,15 @@ void increment(int i) {
   Serial.print("Speed: ");
   Serial.println(speed);
   setMotor(speed);
-  unsigned long duration = sumRange(stepDurations, i, stage);
+  unsigned long duration = sumRange(stepDurations, stage-i, stage);
   Serial.print("Duration: ");
   Serial.println(duration);
   Serial.print("Start time: ");
   Serial.println(startTime);
   Serial.print("End time: ");
   Serial.println(startTime + duration);
-  // while (millis() < startTime + duration) {
+  while (millis() < startTime + duration) {
+  unsigned long mills=min(millis(),startTime+duration);
   // int t = millis(); // Initialize time for uniform brighness
   Serial.print("Averaging LEDS. millis:");
   Serial.println(millis());
@@ -202,10 +203,11 @@ void increment(int i) {
     // giving more weight to the end color. The abs() is there to ensure that
     // the delay in the two millis() calls above does not cause a negative
     // value.
-    setSegment(seg, endValues[seg]);
+    setSegment(seg, blendColors(originalValues[seg],endValues[seg],startTime+duration-mills,mills-startTime));
+    //setSegment(seg, endValues[seg]);
   }
   FastLED.show();
-  //}
+  }
   Serial.println("Duration Done");
   setMotor(-speed);
   Serial.print("backtranking ");
@@ -213,6 +215,15 @@ void increment(int i) {
   // delay(-(millis()-(startTime + duration)));//backtrack ammount duration
   // overshot by
   setMotor(0);
+   for (int seg = 0; seg < nSegments; seg++) {
+    // set each to the blend of its original and end values with the more time
+    // giving more weight to the end color. The abs() is there to ensure that
+    // the delay in the two millis() calls above does not cause a negative
+    // value.
+    setSegment(seg, endValues[seg]);
+    //setSegment(seg, endValues[seg]);
+  }
+  FastLED.show();
 }
 
 // LED utilities
@@ -238,13 +249,18 @@ CRGB getSegment(int i, CRGB source[]) { return source[i * segmentSize]; }
    alpha1 to alpha2. Alpha 1 and Alpha2 must be positive, but do not have to
    have a certain sum.
 */
-CRGB blendColors(CRGB c1, CRGB c2, double alpha1, double alpha2) {
-  double sum = alpha1 + alpha2;
-  alpha1 = alpha1 / sum;
-  alpha2 = alpha2 / sum;
+CRGB blendColors(CRGB c1, CRGB c2, unsigned long alpha1, unsigned long alpha2) {
+  unsigned long sum = alpha1 + alpha2;
+  double prop1 = (0.0+alpha1) / sum;
+  double prop2 = (0.0+alpha2) / sum;
+  Serial.println("_________________________________");
+  Serial.print(sum);
+  Serial.print(" , ");
+  Serial.println(prop2);
+  Serial.println("_________________________________");
   CRGB combined = CRGB(0, 0, 0);
   for (int i = 0; i < 3; i++) {
-    combined[i] = (byte)(c1[i] * alpha1 + c2[i] * alpha2);
+    combined[i] = max(0,min(255,(c1[i] * prop1 + c2[i] * prop2)));
   }
   return combined;
 }
