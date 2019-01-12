@@ -53,8 +53,8 @@ const int period = 1000; // unused
 // Trellis
 const int TRELLIS_INT_PIN = A2;
 const int TRELLIS_NUM_KEYS = 16;
-Adafruit_Trellis matrix0 = Adafruit_Trellis();
-Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
+Adafruit_Trellis matrix0();
+Adafruit_TrellisSet trellis(&matrix0);
 
 // Motor
 Servo cim;
