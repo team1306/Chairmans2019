@@ -103,31 +103,17 @@ void loop() {
   Serial.print("button: ");
   Serial.println(button);
 
-  // When you press down an "activatable" button it turns off, if it's not
-  // "activatable" it turns on
-  for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
-    if (((i < 7 || i == 12) || i == 15)) {
-      if (trellis.justPressed(i)) {
-        Serial.print("Button v");
-        Serial.println(i);
-        trellis.clrLED(i);
-      }
-      if (trellis.justReleased(i)) {
-        Serial.print("Button ^");
-        Serial.println(i);
-        trellis.setLED(i);
-        button = i;
-      }
-    }
-
+  // Turn a pressable button off then on when pressed
     for (int i = 0; i < TRELLIS_NUM_KEYS; i++) {
-      if (trellis.isKeyPressed(i)) {
-        Serial.print("Button pressed-" + i);
+      if (trellis.isKeyPressed(i) && (i < 7 || i == 12) || i == 15)) {
+          button = i;
+          trellis.clrLED(i);
+          delay(200);
+          trellis.setLED(i);
+          Serial.print("Button pressed - ");
+          Serial.println(i);
       }
     }
-    Serial.print("Button pressed- Button ");
-    Serial.println(i);
-  }
 
   if (!(button == -1)) {
     if (button < 8) {
