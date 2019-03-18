@@ -19,6 +19,11 @@ void setup() {
 }
 
 void loop() {
+  int numRotations = 1;
+  rotate(numRotations);
+}
+
+void rotate(int r){
   curr = analogRead(ANALOG_PIN);
   Serial.print("Current: ");
   Serial.println(curr);
@@ -31,7 +36,7 @@ void loop() {
     isHigh = false;
   }
 
-  if (i > 174) {                //  Stop rotating after one revolution
+  if (i > 174*r) {                //  Stop rotating after one revolution
     i = 0;
     cim.write(90);
     Serial.println("Stop");
@@ -39,4 +44,5 @@ void loop() {
   } else {
     cim.write(45);              //  Keep rotating if you haven't finished one revolution
   }
+
 }
