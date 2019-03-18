@@ -8,7 +8,7 @@
   Pin 21 - SCL (Trellis)
   Pin 42 - Din (LED Strip)
   Pin A2 - INT (Trellis)
-  Pin A7 - Seat motor hall 
+  Pin A7 - Seat motor encoder
   
 Power                                                       ┌──>Trellis 5V
                                   ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
@@ -61,6 +61,12 @@ Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 Servo cim;
 const int CIM_PIN = 9;
 int stage = 0;
+int ANALOG_PIN = A7;
+
+boolean isHigh = false;
+int curr = 0;
+int encoderIncrement = 0;
+int amtToRotate = 0.25; //how much the gears should rotate in each step
 
 void setup() {
   Serial.begin(9600);
@@ -120,14 +126,15 @@ void loop() {
   if (!(button == -1)) {
     if (button < 8) {
       increment(1);
+      rotate(amtToRotate);
     }
     if (button == 12) {
       increment(-1);
+      rotate(-amtToRotate);
     }
     if (button == 15) {
+      rotate(-amtToRotate*stage);
       increment(-stage);
-      // this should work, right? -mateo
-      // Yes, but its called stage and is changed in-methods - Egan
     }
   }
 
@@ -166,14 +173,16 @@ void increment(int i) {
   Serial.println("LED Destinations calculated");
   unsigned long startTime = millis();
   double speed = 0.1;
+  /* 
   if (i > 0) {
     speed = topMotorSpeed;
   } else {
     speed = -topMotorSpeed;
   }
-  Serial.print("Speed: ");
-  Serial.println(speed);
-  setMotor(speed);
+  */
+  //Serial.print("Speed: ");
+  //Serial.println(speed);
+  //setMotor(speed);
   unsigned long duration = sumRange(stepDurations, stage-i, stage);
   Serial.print("Duration: ");
   Serial.println(duration);
@@ -197,12 +206,12 @@ void increment(int i) {
   FastLED.show();
   }
   Serial.println("Duration Done");
-  setMotor(-speed);
+  //setMotor(-speed);
   Serial.print("backtranking ");
   Serial.println(-(millis() - (startTime + duration)));
   // delay(-(millis()-(startTime + duration)));//backtrack ammount duration
   // overshot by
-  setMotor(0);
+  //setMotor(0);
    for (int seg = 0; seg < nSegments; seg++) {
     // set each to the blend of its original and end values with the more time
     // giving more weight to the end color. The abs() is there to ensure that
@@ -318,4 +327,32 @@ unsigned long sumRange(const unsigned long arr[], int ind1, int ind2) {
     sum += arr[i];
   }
   return sum;
+}
+
+/**
+  * Rotates seat motor r rotations based on encoder instead of time
+  */
+
+void rotate(int r){
+  curr = analogRead(ANALOG_PIN);
+  Serial.print("Current: ");
+  Serial.println(curr);
+
+  if (curr > 400) {             //  If the current value is greater than 400 (peak), set isHigh to true
+    isHigh = true;
+  }
+  if (isHigh && curr < 200) {   //  If there's a peak and the current value is below 200 (trough), iterate and reset isHigh to false
+    encoderIncrement++;
+    isHigh = false;
+  }
+
+  if (encoderIncrement > 174*r) {                //  Stop rotating after one revolution
+    encoderIncrement = 0;
+    cim.write(90);
+    Serial.println("Stop");
+    delay(4000);
+  } else {
+    cim.write(45);              //  Keep rotating if you haven't finished one revolution
+  }
+
 }
