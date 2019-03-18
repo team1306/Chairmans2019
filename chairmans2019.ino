@@ -8,8 +8,9 @@
   Pin 21 - SCL (Trellis)
   Pin 42 - Din (LED Strip)
   Pin A2 - INT (Trellis)
-
-  Power                                                         ┌──>Trellis 5V
+  Pin A7 - Seat motor hall 
+  
+Power                                                       ┌──>Trellis 5V
                                   ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
     Robot Battery─>Breaker─>PDP─┤                           └──>Arduino Vin
                                   └─>40A─>Victor─>CIM
@@ -93,6 +94,7 @@ void setup() {
 
   Serial.println("Attaching CIM as Servo");
   cim.attach(CIM_PIN);
+  cim.write(90);
 }
 
 void loop() {
@@ -105,7 +107,7 @@ void loop() {
 
   // Turn a pressable button off then on when pressed
     for (int i = 0; i < TRELLIS_NUM_KEYS; i++) {
-      if (trellis.isKeyPressed(i) && (i < 7 || i == 12) || i == 15)) {
+      if (trellis.isKeyPressed(i) && (i < 7 || i == 12 || i == 15)){
           button = i;
           trellis.clrLED(i);
           delay(200);
@@ -154,11 +156,11 @@ void increment(int i) {
   for (int seg = 0; seg < nSegments; seg++) {
     originalValues[seg] = getSegment(seg);
     if (seg < stage) {
-      endValues[seg] = past;
+      endValues[nSegments-1-seg] = past;
     } else if (seg == stage) {
-      endValues[seg] = current;
+      endValues[nSegments-1-seg] = current;
     } else {
-      endValues[seg] = future;
+      endValues[nSegments-1-seg] = future;
     }
   }
   Serial.println("LED Destinations calculated");
