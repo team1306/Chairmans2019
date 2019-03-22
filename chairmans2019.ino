@@ -329,35 +329,33 @@ unsigned long sumRange(const unsigned long arr[], int ind1, int ind2) {
   return sum;
 }
 
-void rotate(int r) {
-  int endCount=PULSES_PER_ROTATION*r;
-  while (i/2 >= armatureRotations*r) {
+void rotate(double r) {
+  int endCount = PULSES_PER_ROTATION * r;
+  while (i / 2 >= endCount) {
     cim.write(180);
     currPositive = analogRead(ANALOG_PIN_POSITIVE);
     currNegative = analogRead(ANALOG_PIN_NEGATIVE);
     currDifference = (currPositive - currNegative);
 
-    if(currDifference > 0){
-      if(!posOrNeg){
+    if (currDifference > 0) {
+      if (!posOrNeg) {
         i++;
       }
       posOrNeg = true;
     }
-    else if (currDifference < 0){
-      if(posOrNeg){
+    else if (currDifference < 0) {
+      if (posOrNeg) {
         i++;
       }
       posOrNeg = false;
     }
-Serial.println(i);
+    Serial.println(i);
 
   }
-    
-        //  Stop rotating after r revolutions
-      i = 0;
-      cim.write(90);
-      completedRotation = true;
-      Serial.println("Stop");
-      delay(4000);
-    
+  
+  cim.write(90);
+  completedRotation = true;
+  Serial.println("Stop");
+  delay(4000);
+
 }
