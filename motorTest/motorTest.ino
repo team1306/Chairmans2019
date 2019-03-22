@@ -4,7 +4,7 @@ Servo cim;
 
 int ANALOG_PIN_NEGATIVE = A7;
 int ANALOG_PIN_POSITIVE = A5;
-int PULSES_PER_ROTATION=176;
+int PULSES_PER_ROTATION = 176;
 const int CIM_PIN = 9;
 
 boolean posOrNeg = false; //true is positive, false is negative
@@ -28,43 +28,39 @@ void setup() {
 
   int numRotations = 1;
   rotate(numRotations);
-  //    cim.write(180);
 
 }
 
 void loop() {
-
 }
 
-void rotate(int r) {
-  int endCount=PULSES_PER_ROTATION*r;
-  while (i/2 >= armatureRotations*r) {
+void rotate(double r) {
+  int endCount = PULSES_PER_ROTATION * r;
+  while (i / 2 >= endCount) {
     cim.write(180);
     currPositive = analogRead(ANALOG_PIN_POSITIVE);
     currNegative = analogRead(ANALOG_PIN_NEGATIVE);
     currDifference = (currPositive - currNegative);
 
-    if(currDifference > 0){
-      if(!posOrNeg){
+    if (currDifference > 0) {
+      if (!posOrNeg) {
         i++;
       }
       posOrNeg = true;
     }
-    else if (currDifference < 0){
-      if(posOrNeg){
+    else if (currDifference < 0) {
+      if (posOrNeg) {
         i++;
       }
       posOrNeg = false;
     }
-Serial.println(i);
+    Serial.println(i);
 
   }
-    
-        //  Stop rotating after r revolutions
-      i = 0;
-      cim.write(90);
-      completedRotation = true;
-      Serial.println("Stop");
-      delay(4000);
-    
+  
+  cim.write(90);
+  completedRotation = true;
+  Serial.println("Stop");
+  delay(4000);
+
 }
