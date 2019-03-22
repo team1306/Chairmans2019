@@ -13,6 +13,7 @@ boolean completedRotation = false;
 int currPositive = 0;
 int currNegative = 0;
 int currDifference = 0;
+int armatureRotations = 174;
 
 int i = 0;
 
@@ -37,7 +38,7 @@ void loop() {
 
 void rotate(int r) {
   int endCount=PULSES_PER_ROTATION*r;
-  while (i<endCount) {
+  while (i/2 >= armatureRotations*r) {
     cim.write(180);
     currPositive = analogRead(ANALOG_PIN_POSITIVE);
     currNegative = analogRead(ANALOG_PIN_NEGATIVE);
@@ -55,9 +56,9 @@ void rotate(int r) {
       }
       posOrNeg = false;
     }
+Serial.println(i);
 
   }
-
     
         //  Stop rotating after r revolutions
       i = 0;
@@ -65,5 +66,5 @@ void rotate(int r) {
       completedRotation = true;
       Serial.println("Stop");
       delay(4000);
-
+    
 }
