@@ -329,30 +329,35 @@ unsigned long sumRange(const unsigned long arr[], int ind1, int ind2) {
   return sum;
 }
 
-/**
-  * Rotates seat motor r rotations based on encoder instead of time
-  */
+void rotate(int r) {
+  int endCount=PULSES_PER_ROTATION*r;
+  while (i/2 >= armatureRotations*r) {
+    cim.write(180);
+    currPositive = analogRead(ANALOG_PIN_POSITIVE);
+    currNegative = analogRead(ANALOG_PIN_NEGATIVE);
+    currDifference = (currPositive - currNegative);
 
-void rotate(int r){
-  curr = analogRead(ANALOG_PIN);
-  Serial.print("Current: ");
-  Serial.println(curr);
+    if(currDifference > 0){
+      if(!posOrNeg){
+        i++;
+      }
+      posOrNeg = true;
+    }
+    else if (currDifference < 0){
+      if(posOrNeg){
+        i++;
+      }
+      posOrNeg = false;
+    }
+Serial.println(i);
 
-  if (curr > 400) {             //  If the current value is greater than 400 (peak), set isHigh to true
-    isHigh = true;
   }
-  if (isHigh && curr < 200) {   //  If there's a peak and the current value is below 200 (trough), iterate and reset isHigh to false
-    encoderIncrement++;
-    isHigh = false;
-  }
-
-  if (encoderIncrement > 174*r) {                //  Stop rotating after one revolution
-    encoderIncrement = 0;
-    cim.write(90);
-    Serial.println("Stop");
-    delay(4000);
-  } else {
-    cim.write(45);              //  Keep rotating if you haven't finished one revolution
-  }
-
+    
+        //  Stop rotating after r revolutions
+      i = 0;
+      cim.write(90);
+      completedRotation = true;
+      Serial.println("Stop");
+      delay(4000);
+    
 }
