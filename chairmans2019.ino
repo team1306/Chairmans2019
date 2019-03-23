@@ -63,10 +63,19 @@ const int CIM_PIN = 9;
 int stage = 0;
 int ANALOG_PIN = A7;
 
-boolean isHigh = false;
-int curr = 0;
-int encoderIncrement = 0;
-int amtToRotate = 0.25; //how much the gears should rotate in each step
+int ANALOG_PIN_NEGATIVE = A7;
+int ANALOG_PIN_POSITIVE = A5;
+int PULSES_PER_ROTATION = 176;
+
+boolean posOrNeg = false; //true is positive, false is negative
+boolean completedRotation = false;
+
+int currPositive = 0;
+int currNegative = 0;
+int currDifference = 0;
+int armatureRotations = 174;
+double amtToRotate = 1; //spin 1 rotation per step
+int m = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -99,8 +108,12 @@ void setup() {
   trellis.setLED(12);
 
   Serial.println("Attaching CIM as Servo");
+  pinMode(ANALOG_PIN_NEGATIVE, INPUT);   //  Set A7 as an input
+  pinMode(ANALOG_PIN_POSITIVE, INPUT);   //  Set A5 as an input
   cim.attach(CIM_PIN);
-  cim.write(90);
+  cim.write(90;                //  Run motor at full speed
+  Serial.println("Start");
+  
 }
 
 void loop() {
@@ -329,9 +342,10 @@ unsigned long sumRange(const unsigned long arr[], int ind1, int ind2) {
   return sum;
 }
 
+
 void rotate(double r) {
   int endCount = PULSES_PER_ROTATION * r;
-  while (i / 2 >= endCount) {
+  while (m / 2 >= endCount) {
     cim.write(180);
     currPositive = analogRead(ANALOG_PIN_POSITIVE);
     currNegative = analogRead(ANALOG_PIN_NEGATIVE);
@@ -339,23 +353,23 @@ void rotate(double r) {
 
     if (currDifference > 0) {
       if (!posOrNeg) {
-        i++;
+        m++;
       }
       posOrNeg = true;
     }
     else if (currDifference < 0) {
       if (posOrNeg) {
-        i++;
+        m++;
       }
       posOrNeg = false;
     }
-    Serial.println(i);
+    Serial.println(m);
 
   }
   
   cim.write(90);
   completedRotation = true;
   Serial.println("Stop");
-  delay(4000);
+//  delay(4000);
 
 }

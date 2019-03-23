@@ -28,7 +28,11 @@ void setup() {
 
   int numRotations = 1;
   rotate(numRotations);
-
+  delay(2000);
+rotate(numRotations);
+  delay(2000);rotate(numRotations);
+  delay(2000);rotate(numRotations);
+  delay(2000);
 }
 
 void loop() {
