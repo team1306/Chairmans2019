@@ -1,3 +1,4 @@
+
 /*
   chairmans2019.ino - Code to run on Chairmans Visual for the 2019 season
   authors - Egan Johnson, Mateo Silver
@@ -140,11 +141,11 @@ void loop() {
     if (button < 8) {
       // increment(1);
       // rotate(amtToRotate);
-      if(isSpinning){
-          spin(!isSpinning);
-      } else if (!isSpinning){
+    //  if(isSpinning){
           spin(isSpinning);
-      }
+      //} else if (!isSpinning){
+    //      spin(isSpinning);
+     // }
     }
     if (button == 12) {
       // increment(-1);
@@ -379,7 +380,7 @@ void rotate(double r) {
 
 }
 
-void spin(bool isSpinning){
+void spin(bool &isSpinning){
     if(isSpinning){
         cim.write(45);
         isSpinning = !isSpinning;
