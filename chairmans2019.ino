@@ -9,7 +9,7 @@
   Pin 42 - Din (LED Strip)
   Pin A2 - INT (Trellis)
   Pin A7 - Seat motor encoder
-  
+
 Power                                                       ┌──>Trellis 5V
                                   ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
     Robot Battery─>Breaker─>PDP─┤                           └──>Arduino Vin
@@ -41,8 +41,7 @@ const int nSegments = 5;    // How many segments are in the whole thing
 const int nLEDS = segmentSize * nSegments;   // How many LED's we have
 CRGB leds[nLEDS];           // Cmt missing?
 const int LED_PIN = 42;
-CRGB current =
-    CRGB(255, 0, 0); // changed from (230, 20, 20) bc it was too unsaturated
+CRGB current = CRGB(255, 0, 0); // changed from (230, 20, 20) bc it was too unsaturated
 CRGB past = CRGB(155, 155, 155);
 CRGB future = CRGB(0, 0, 0);
 
@@ -50,6 +49,7 @@ CRGB future = CRGB(0, 0, 0);
 const float topMotorSpeed = 1.0;
 const unsigned long stepDurations[] = {1000, 1000, 1000, 1000, 1000};
 const int period = 1000; // unused
+bool isSpinning = false;
 
 // Trellis
 const int TRELLIS_INT_PIN = A2;
@@ -111,9 +111,9 @@ void setup() {
   pinMode(ANALOG_PIN_NEGATIVE, INPUT);   //  Set A7 as an input
   pinMode(ANALOG_PIN_POSITIVE, INPUT);   //  Set A5 as an input
   cim.attach(CIM_PIN);
-  cim.write(90;                //  Run motor at full speed
+  cim.write(90);                //  Run motor at full speed
   Serial.println("Start");
-  
+
 }
 
 void loop() {
@@ -138,16 +138,21 @@ void loop() {
 
   if (!(button == -1)) {
     if (button < 8) {
-      increment(1);
-      rotate(amtToRotate);
+      // increment(1);
+      // rotate(amtToRotate);
+      if(isSpinning){
+          spin(!isSpinning);
+      } else if (!isSpinning){
+          spin(isSpinning);
+      }
     }
     if (button == 12) {
-      increment(-1);
-      rotate(-amtToRotate);
+      // increment(-1);
+      // rotate(-amtToRotate);
     }
     if (button == 15) {
-      rotate(-amtToRotate*stage);
-      increment(-stage);
+      // rotate(-amtToRotate*stage);
+      // increment(-stage);
     }
   }
 
@@ -186,7 +191,7 @@ void increment(int i) {
   Serial.println("LED Destinations calculated");
   unsigned long startTime = millis();
   double speed = 0.1;
-  /* 
+  /*
   if (i > 0) {
     speed = topMotorSpeed;
   } else {
@@ -366,10 +371,21 @@ void rotate(double r) {
     Serial.println(m);
 
   }
-  
+
   cim.write(90);
   completedRotation = true;
   Serial.println("Stop");
 //  delay(4000);
 
+}
+
+void spin(bool isSpinning){
+    if(isSpinning){
+        cim.write(45);
+        isSpinning = !isSpinning;
+    }
+    else if(!isSpinning){
+        cim.write(90);
+        isSpinning = !isSpinning;
+    }
 }
