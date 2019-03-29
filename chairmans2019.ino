@@ -11,7 +11,7 @@
   Pin A2 - INT (Trellis)
   Pin A7 - Seat motor encoder
 
-Power                                                       ┌──>Trellis 5V
+  Power                                                       ┌──>Trellis 5V
                                   ┌─>5V──>Breadboard 5V Rail┼──>LED Strip 5V
     Robot Battery─>Breaker─>PDP─┤                           └──>Arduino Vin
                                   └─>40A─>Victor─>CIM
@@ -55,7 +55,7 @@ bool isSpinning = false;
 // Trellis
 const int TRELLIS_INT_PIN = A2;
 const int TRELLIS_NUM_KEYS = 16;
-Adafruit_Trellis matrix0= Adafruit_Trellis();
+Adafruit_Trellis matrix0 = Adafruit_Trellis();
 Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 
 // Motor
@@ -128,16 +128,16 @@ void loop() {
   trellis.readSwitches();
 
   // Turn a pressable button off then on when pressed
-    for (int i = 0; i < TRELLIS_NUM_KEYS; i++) {
-      if (trellis.isKeyPressed(i) && (i < 7 || i == 12 || i == 15)){
-          button = i;
-          trellis.clrLED(i);
-          delay(200);
-          trellis.setLED(i);
-          Serial.print("Button pressed - ");
-          Serial.println(i);
-      }
+  for (int i = 0; i < TRELLIS_NUM_KEYS; i++) {
+    if (trellis.isKeyPressed(i) && (i < 7 || i == 12 || i == 15)) {
+      button = i;
+      trellis.clrLED(i);
+      delay(200);
+      trellis.setLED(i);
+      Serial.print("Button pressed - ");
+      Serial.println(i);
     }
+  }
 
   if (button != -1)
   {
@@ -147,8 +147,21 @@ void loop() {
   {
     cim.write(90);
   }
+  for (uint8_t i = 0; i < numKeys; i++) {
+    // if it was pressed, turn it on
+    if (trellis.justPressed(i)) {
+      Serial.print("v"); Serial.println(i);
+//      trellis.setLED(i);
+      increment(1);
+    }
+    // if it was released, turn it off
+    if (trellis.justReleased(i)) {
+      Serial.print("^"); Serial.println(i);
+//      trellis.clrLED(i);
+    }
+  }
 
-  
+
   // Reset the state of the trellis. Am i doing trellis right? -Egan
   // readSwitches() returns a boolean depending on if there's been a change in
   // the state of the trellis since the last call
@@ -173,27 +186,27 @@ void increment(int i) {
   for (int seg = 0; seg < nSegments; seg++) {
     originalValues[seg] = getSegment(seg);
     if (seg < stage) {
-      endValues[nSegments-1-seg] = past;
+      endValues[nSegments - 1 - seg] = past;
     } else if (seg == stage) {
-      endValues[nSegments-1-seg] = current;
+      endValues[nSegments - 1 - seg] = current;
     } else {
-      endValues[nSegments-1-seg] = future;
+      endValues[nSegments - 1 - seg] = future;
     }
   }
   Serial.println("LED Destinations calculated");
   unsigned long startTime = millis();
   double speed = 0.1;
   /*
-  if (i > 0) {
+    if (i > 0) {
     speed = topMotorSpeed;
-  } else {
+    } else {
     speed = -topMotorSpeed;
-  }
+    }
   */
   //Serial.print("Speed: ");
   //Serial.println(speed);
   //setMotor(speed);
-  unsigned long duration = sumRange(stepDurations, stage-i, stage);
+  unsigned long duration = sumRange(stepDurations, stage - i, stage);
   Serial.print("Duration: ");
   Serial.println(duration);
   Serial.print("Start time: ");
@@ -201,19 +214,19 @@ void increment(int i) {
   Serial.print("End time: ");
   Serial.println(startTime + duration);
   while (millis() < startTime + duration) {
-  unsigned long mills=min(millis(),startTime+duration);
-  // int t = millis(); // Initialize time for uniform brighness
-  Serial.print("Averaging LEDS. millis:");
-  Serial.println(millis());
-  for (int seg = 0; seg < nSegments; seg++) {
-    // set each to the blend of its original and end values with the more time
-    // giving more weight to the end color. The abs() is there to ensure that
-    // the delay in the two millis() calls above does not cause a negative
-    // value.
-    setSegment(seg, blendColors(originalValues[seg],endValues[seg],startTime+duration-mills,mills-startTime));
-    //setSegment(seg, endValues[seg]);
-  }
-  FastLED.show();
+    unsigned long mills = min(millis(), startTime + duration);
+    // int t = millis(); // Initialize time for uniform brighness
+    Serial.print("Averaging LEDS. millis:");
+    Serial.println(millis());
+    for (int seg = 0; seg < nSegments; seg++) {
+      // set each to the blend of its original and end values with the more time
+      // giving more weight to the end color. The abs() is there to ensure that
+      // the delay in the two millis() calls above does not cause a negative
+      // value.
+      setSegment(seg, blendColors(originalValues[seg], endValues[seg], startTime + duration - mills, mills - startTime));
+      //setSegment(seg, endValues[seg]);
+    }
+    FastLED.show();
   }
   Serial.println("Duration Done");
   //setMotor(-speed);
@@ -222,7 +235,7 @@ void increment(int i) {
   // delay(-(millis()-(startTime + duration)));//backtrack ammount duration
   // overshot by
   //setMotor(0);
-   for (int seg = 0; seg < nSegments; seg++) {
+  for (int seg = 0; seg < nSegments; seg++) {
     // set each to the blend of its original and end values with the more time
     // giving more weight to the end color. The abs() is there to ensure that
     // the delay in the two millis() calls above does not cause a negative
@@ -240,7 +253,9 @@ CRGB WHITE = CRGB(255, 255, 255); // white
   Sets a segment of leds to the crgb. A block is the LED's behind a given gear
   or location. DOES NOT update live leds
 */
-void setSegment(int i, CRGB c) { setSegment(i, c, leds); }
+void setSegment(int i, CRGB c) {
+  setSegment(i, c, leds);
+}
 void setSegment(int i, CRGB c, CRGB destination[]) {
   for (int ind = i * segmentSize; ind < i * segmentSize + segmentSize; ind++) {
     destination[ind] = c;
@@ -249,8 +264,12 @@ void setSegment(int i, CRGB c, CRGB destination[]) {
 /**
    Gets the value for a segment
 */
-CRGB getSegment(int i) { return leds[i * segmentSize]; }
-CRGB getSegment(int i, CRGB source[]) { return source[i * segmentSize]; }
+CRGB getSegment(int i) {
+  return leds[i * segmentSize];
+}
+CRGB getSegment(int i, CRGB source[]) {
+  return source[i * segmentSize];
+}
 /**
    Finds the blend of colors c1 and c2. The ratio of c1 to c2 is determined by
    alpha1 to alpha2. Alpha 1 and Alpha2 must be positive, but do not have to
@@ -258,8 +277,8 @@ CRGB getSegment(int i, CRGB source[]) { return source[i * segmentSize]; }
 */
 CRGB blendColors(CRGB c1, CRGB c2, unsigned long alpha1, unsigned long alpha2) {
   unsigned long sum = alpha1 + alpha2;
-  double prop1 = (0.0+alpha1) / sum;
-  double prop2 = (0.0+alpha2) / sum;
+  double prop1 = (0.0 + alpha1) / sum;
+  double prop2 = (0.0 + alpha2) / sum;
   Serial.println("_________________________________");
   Serial.print(sum);
   Serial.print(" , ");
@@ -267,7 +286,7 @@ CRGB blendColors(CRGB c1, CRGB c2, unsigned long alpha1, unsigned long alpha2) {
   Serial.println("_________________________________");
   CRGB combined = CRGB(0, 0, 0);
   for (int i = 0; i < 3; i++) {
-    combined[i] = max(0,min(255,(c1[i] * prop1 + c2[i] * prop2)));
+    combined[i] = max(0, min(255, (c1[i] * prop1 + c2[i] * prop2)));
   }
   return combined;
 }
@@ -291,8 +310,8 @@ void trellisBootLEDs() {
 
 // CIM Utilities
 /**
- * Rotates CIM x number of time segments
- */
+   Rotates CIM x number of time segments
+*/
 void rotateMotorFinite(int direction, int steps) {
   Serial.print("rotating motor for duration");
   if (direction == 1) {
@@ -312,11 +331,11 @@ void rotateMotorFinite(int direction, int steps) {
   }
 }
 /**
- * Sets the motor to the direction indicated by the parameter.
- * Lack of blocking 'delay' calls enables synchronization with leds
- * float value of 1 sets to full forward, and float value of -1 sets to full
- * backward. hi
- */
+   Sets the motor to the direction indicated by the parameter.
+   Lack of blocking 'delay' calls enables synchronization with leds
+   float value of 1 sets to full forward, and float value of -1 sets to full
+   backward. hi
+*/
 void setMotor(float value) {
   Serial.print("Setting Motor to ");
   int val = 90 + (int)(90 * value);
@@ -325,10 +344,10 @@ void setMotor(float value) {
 }
 
 /**
- * Finds the sum of the array values in parameter1 between paramater2 and
- * paramter3. param 2 and 3 represent array indicies, but their order does not
- * matter.
- */
+   Finds the sum of the array values in parameter1 between paramater2 and
+   paramter3. param 2 and 3 represent array indicies, but their order does not
+   matter.
+*/
 unsigned long sumRange(const unsigned long arr[], int ind1, int ind2) {
   int lower = min(ind1, ind2);
   int upper = max(ind1, ind2);
@@ -346,7 +365,7 @@ void rotate(double r) {
   m = 0;
   Serial.println("Enter rotate");
   cim.write(180);
-  while (m/2 <= endCount) {
+  while (m / 2 <= endCount) {
     //cim.write(180);
     currPositive = analogRead(ANALOG_PIN_POSITIVE);
     currNegative = analogRead(ANALOG_PIN_NEGATIVE);
@@ -373,17 +392,17 @@ void rotate(double r) {
   cim.write(90);
   completedRotation = true;
   Serial.println("Stop");
-//  delay(4000);
+  //  delay(4000);
 
 }
 
-void spin(bool &isSpinning){
-    if(isSpinning){
-        cim.write(45);
-        isSpinning = !isSpinning;
-    }
-    else if(!isSpinning){
-        cim.write(90);
-        isSpinning = !isSpinning;
-    }
+void spin(bool &isSpinning) {
+  if (isSpinning) {
+    cim.write(45);
+    isSpinning = !isSpinning;
+  }
+  else if (!isSpinning) {
+    cim.write(90);
+    isSpinning = !isSpinning;
+  }
 }
