@@ -1,7 +1,7 @@
 
 /*
   chairmans2019.ino - Code to run on Chairmans Visual for the 2019 season
-  authors - Egan Johnson, Mateo Silver
+  authors - Egan Johnson, Mateo Silver, dAVID
 
   Arduino Pins / Connections in use
   Pin 9  - Victor PWM Output
@@ -66,7 +66,7 @@ int ANALOG_PIN = A7;
 
 int ANALOG_PIN_NEGATIVE = A7;
 int ANALOG_PIN_POSITIVE = A5;
-int PULSES_PER_ROTATION = 176;
+int PULSES_PER_ROTATION = 179;
 
 boolean posOrNeg = false; //true is positive, false is negative
 boolean completedRotation = false;
@@ -125,6 +125,8 @@ void loop() {
   Serial.print("button: ");
   Serial.println(button);
 
+  trellis.readSwitches();
+
   // Turn a pressable button off then on when pressed
     for (int i = 0; i < TRELLIS_NUM_KEYS; i++) {
       if (trellis.isKeyPressed(i) && (i < 7 || i == 12 || i == 15)){
@@ -137,27 +139,16 @@ void loop() {
       }
     }
 
-  if (!(button == -1)) {
-    if (button < 8) {
-      // increment(1);
-      // rotate(amtToRotate);
-    //  if(isSpinning){
-          spin(isSpinning);
-      //} else if (!isSpinning){
-    //      spin(isSpinning);
-     // }
-    }
-    if (button == 12) {
-      // increment(-1);
-      // rotate(-amtToRotate);
-    }
-    if (button == 15) {
-      // rotate(-amtToRotate*stage);
-      // increment(-stage);
-    }
+  if (button != -1)
+  {
+    cim.write(180);
+  }
+  else
+  {
+    cim.write(90);
   }
 
-  trellis.readSwitches();
+  
   // Reset the state of the trellis. Am i doing trellis right? -Egan
   // readSwitches() returns a boolean depending on if there's been a change in
   // the state of the trellis since the last call
@@ -351,11 +342,17 @@ unsigned long sumRange(const unsigned long arr[], int ind1, int ind2) {
 
 void rotate(double r) {
   int endCount = PULSES_PER_ROTATION * r;
-  while (m / 2 >= endCount) {
-    cim.write(180);
+  posOrNeg = false;
+  m = 0;
+  Serial.println("Enter rotate");
+  cim.write(180);
+  while (m/2 <= endCount) {
+    //cim.write(180);
     currPositive = analogRead(ANALOG_PIN_POSITIVE);
     currNegative = analogRead(ANALOG_PIN_NEGATIVE);
     currDifference = (currPositive - currNegative);
+
+    Serial.println(currDifference);
 
     if (currDifference > 0) {
       if (!posOrNeg) {
@@ -369,7 +366,7 @@ void rotate(double r) {
       }
       posOrNeg = false;
     }
-    Serial.println(m);
+    //Serial.println(m);
 
   }
 
