@@ -61,7 +61,7 @@ Adafruit_TrellisSet trellis = Adafruit_TrellisSet(&matrix0);
 // Motor
 Servo cim;
 const int CIM_PIN = 9;
-int stage = 0;
+int stage = -1;
 int ANALOG_PIN = A7;
 
 int ANALOG_PIN_NEGATIVE = A7;
@@ -147,12 +147,12 @@ void loop() {
   {
     cim.write(90);
   }
-  for (uint8_t i = 0; i < numKeys; i++) {
+  for (uint8_t i = 0; i < TRELLIS_NUM_KEYS; i++) {
     // if it was pressed, turn it on
     if (trellis.justPressed(i)) {
       Serial.print("v"); Serial.println(i);
 //      trellis.setLED(i);
-      increment(1);
+      increment(1, button);
     }
     // if it was released, turn it off
     if (trellis.justReleased(i)) {
@@ -174,7 +174,7 @@ void loop() {
   gears will spin for a set amount of time, so we must use some timing to ensure
   that differences in setting LED's does not change the distance rotated.
 */
-void increment(int i) {
+void increment(int i, int hold) {
   Serial.print("increment(");
   Serial.print(i);
   Serial.println(") called");
@@ -213,11 +213,15 @@ void increment(int i) {
   Serial.println(startTime);
   Serial.print("End time: ");
   Serial.println(startTime + duration);
+
+  /*
   while (millis() < startTime + duration) {
     unsigned long mills = min(millis(), startTime + duration);
     // int t = millis(); // Initialize time for uniform brighness
     Serial.print("Averaging LEDS. millis:");
     Serial.println(millis());
+    if(!trellis.isKeyPressed(hold)) { cim.write(90); }
+    else { cim.write(180); }
     for (int seg = 0; seg < nSegments; seg++) {
       // set each to the blend of its original and end values with the more time
       // giving more weight to the end color. The abs() is there to ensure that
@@ -228,6 +232,7 @@ void increment(int i) {
     }
     FastLED.show();
   }
+  */
   Serial.println("Duration Done");
   //setMotor(-speed);
   Serial.print("backtranking ");
