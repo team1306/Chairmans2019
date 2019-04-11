@@ -118,7 +118,7 @@ void effect(int currentEffect) {
 
       checkIfPushed();
       break;
-      case 3:
+    case 3:
       checkIfPushed();
       setSectionColorCRGB(1, CRGB::Green);
       delay(500);
@@ -141,7 +141,7 @@ void effect(int currentEffect) {
 
       checkIfPushed();
       break;
-      case 4:
+    case 4:
       checkIfPushed();
       setSectionColorCRGB(1, CRGB::Blue);
       delay(500);
@@ -164,7 +164,7 @@ void effect(int currentEffect) {
 
       checkIfPushed();
       break;
-      case 5:
+    case 5:
       checkIfPushed();
       setSectionColorCRGB(1, CRGB::Violet);
       delay(500);
@@ -187,9 +187,12 @@ void effect(int currentEffect) {
 
       checkIfPushed();
       break;
-      case 6:
-         rainbow(3,FAST,FORWARD);
-         break;
+    case 6:
+      checkIfPushed();
+      rainbow(3, FAST, FORWARD);
+      checkIfPushed();
+
+      break;
     default:
       break;
   }
@@ -233,6 +236,8 @@ void checkIfPushed() {
     cim.write(180);
     delay(1000);
     cim.write(90);
+  }else{
+    cim.write(90);
   }
 }
 
@@ -240,29 +245,31 @@ void setLEDs(int index, CRGB value) {
   leds[index] = value;
 }
 
-void rainbow(int cycles, int speed,int direction){ // TODO direction
-    for(int j=0; j<256*cycles; j++) {
-      for(int i=0; i< nLEDS; i++) {
-        if(direction==FORWARD){
-          setLEDs(i, Wheel(((i * 256 / nLEDS) + j) % 255));}
-        else{
-          setLEDs(i,Wheel(((i * 256 / nLEDS) + j) % 255));}   
+void rainbow(int cycles, int speed, int direction) { // TODO direction
+  for (int j = 0; j < 256 * cycles; j++) {
+    for (int i = 0; i < nLEDS; i++) {
+      if (direction == FORWARD) {
+        setLEDs(i, Wheel(((i * 256 / nLEDS) + j) % 255));
       }
-      FastLED.show();
-      delay(speed);
+      else {
+        setLEDs(i, Wheel(((i * 256 / nLEDS) + j) % 255));
+      }
     }
+    FastLED.show();
+    delay(speed);
+  }
 }
 
 CRGB Wheel(byte WheelPos) {
-  if(WheelPos < 85) {
-    return CRGB(1*(WheelPos * 3)/4, 1*(255 - WheelPos * 3)/4, 0);
-  } 
-  else if(WheelPos < 170) {
+  if (WheelPos < 85) {
+    return CRGB(1 * (WheelPos * 3) / 4, 1 * (255 - WheelPos * 3) / 4, 0);
+  }
+  else if (WheelPos < 170) {
     WheelPos -= 85;
-    return CRGB(1*(255 - WheelPos * 3)/4, 0, 1*(WheelPos * 3)/4);
-  } 
+    return CRGB(1 * (255 - WheelPos * 3) / 4, 0, 1 * (WheelPos * 3) / 4);
+  }
   else {
     WheelPos -= 170;
-    return CRGB(0, 1*(WheelPos * 3)/4, 1*(255 - WheelPos * 3)/4);
+    return CRGB(0, 1 * (WheelPos * 3) / 4, 1 * (255 - WheelPos * 3) / 4);
   }
 }
